@@ -1,0 +1,32 @@
+/* Design tokens, taken from the prototype. */
+:root {
+  --bg: #090d16;
+  --surface: #101626;
+  --glass: rgba(255, 255, 255, 0.045);
+  --line: rgba(255, 255, 255, 0.09);
+  --line-soft: rgba(255, 255, 255, 0.05);
+  --tx: #f4f6fa;
+  --mut: #8c96aa;
+  --placeholder: #5d677b;
+
+  --em: #10b981;
+  --em-bg: rgba(16, 185, 129, 0.12);
+  --em-line: rgba(16, 185, 129, 0.28);
+  --em-text: #6ee7b7;
+  --em-strong: #34d399;
+  --on-em: #04120c;
+
+  --cr: #e11d48;
+  --cr-bg: rgba(225, 29, 72, 0.13);
+  --cr-line: rgba(225, 29, 72, 0.38);
+  --cr-text: #fb7185;
+
+  --amber-text: #fbbf24;
+  --amber-bg: rgba(251, 191, 36, 0.12);
+
+  --radius: 16px;
+  --radius-sm: 11px;
+  --font: 'Manrope Variable', Manrope, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  color-scheme: dark;
+}
