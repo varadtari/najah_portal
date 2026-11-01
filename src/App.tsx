@@ -4,7 +4,10 @@ import type { Role } from './api/types'
 import { useAuth } from './auth/session'
 import { AppShell } from './components/AppShell'
 import { ComingSoonPage } from './pages/ComingSoonPage'
+import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
+import { MembersPage } from './pages/MembersPage'
+import { OverduePage } from './pages/OverduePage'
 
 // Lets through only signed-in users with one of the given roles; others go to login or to
 // their own home. The API enforces the same rules, this only keeps people off dead ends.
@@ -27,9 +30,9 @@ export default function App() {
       <Route element={<RequireRole roles={['owner', 'staff', 'superadmin']} />}>
         <Route element={<AppShell />}>
           <Route element={<RequireRole roles={['owner', 'staff']} />}>
-            <Route index element={<ComingSoonPage title="Dashboard" note="Members, revenue and overdue at a glance" />} />
-            <Route path="members" element={<ComingSoonPage title="Members" note="Everyone enrolled at your gym" />} />
-            <Route path="overdue" element={<ComingSoonPage title="Overdue" note="Members who need a reminder" />} />
+            <Route index element={<DashboardPage />} />
+            <Route path="members" element={<MembersPage />} />
+            <Route path="overdue" element={<OverduePage />} />
           </Route>
           <Route element={<RequireRole roles={['owner']} />}>
             <Route path="settings" element={<ComingSoonPage title="Settings" note="Plans, staff and access rules" />} />

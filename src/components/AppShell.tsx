@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
+import { useDashboard } from '../api/queries'
 import { useAuth } from '../auth/session'
 import { BuildingIcon, ClockIcon, DashboardIcon, MembersIcon, SettingsIcon } from './Icons'
 import { Logo } from './Logo'
 
-type NavItem = { to: string; label: string; icon: ReactNode; end?: boolean }
+type NavItem = { to: string; label: string; icon: ReactNode; end?: boolean; badge?: boolean }
 
 function navItemsFor(role: string): NavItem[] {
   if (role === 'superadmin') {
@@ -15,10 +16,17 @@ function navItemsFor(role: string): NavItem[] {
   const items: NavItem[] = [
     { to: '/', label: 'Dashboard', icon: <DashboardIcon />, end: true },
     { to: '/members', label: 'Members', icon: <MembersIcon /> },
-    { to: '/overdue', label: 'Overdue', icon: <ClockIcon /> },
+    { to: '/overdue', label: 'Overdue', icon: <ClockIcon />, badge: true },
   ]
   if (role === 'owner') items.push({ to: '/settings', label: 'Settings', icon: <SettingsIcon /> })
   return items
+}
+
+// The overdue badge reuses the dashboard query, so it costs no extra request on most screens.
+// The superadmin has no gym, so it is never fetched for them.
+function useOverdueCount(enabled: boolean): number {
+  const { data } = useDashboard(enabled)
+  return data?.overdueMembers ?? 0
 }
 
 const navClass = ({ isActive }: { isActive: boolean }) => (isActive ? 'nav active' : 'nav')
@@ -27,6 +35,8 @@ const navClass = ({ isActive }: { isActive: boolean }) => (isActive ? 'nav activ
 export function AppShell() {
   const { me, logout } = useAuth()
   const navigate = useNavigate()
+  const hasGym = me !== null && me.role !== 'superadmin'
+  const overdueCount = useOverdueCount(hasGym)
 
   if (!me) return null
 
@@ -46,6 +56,7 @@ export function AppShell() {
             <NavLink key={item.to} to={item.to} end={item.end} className={navClass}>
               {item.icon}
               {item.label}
+              {item.badge && overdueCount > 0 && <span className="cnt">{overdueCount}</span>}
             </NavLink>
           ))}
           <div className="glass gymbox">
@@ -69,6 +80,7 @@ export function AppShell() {
           <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => (isActive ? 'active' : '')}>
             {item.icon}
             {item.label}
+            {item.badge && overdueCount > 0 && <span className="dot" aria-label={`${overdueCount} overdue`} />}
           </NavLink>
         ))}
       </nav>
