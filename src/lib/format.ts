@@ -50,3 +50,29 @@ export function whatsappReminderLink(phone: string, memberName: string, gymName:
 export function formatPhone(phone: string): string {
   return phone.length === 10 ? `+91 ${phone.slice(0, 5)} ${phone.slice(5)}` : phone
 }
+
+/** "just now", "5 min ago", "3 h ago", "2 days ago"; older than a week shows the date. */
+export function relativeTime(isoTimestamp: string, now: Date = new Date()): string {
+  const seconds = Math.round((now.getTime() - new Date(isoTimestamp).getTime()) / 1000)
+  if (seconds < 45) return 'just now'
+  const minutes = Math.round(seconds / 60)
+  if (minutes < 60) return `${minutes} min ago`
+  const hours = Math.round(minutes / 60)
+  if (hours < 24) return `${hours} h ago`
+  const days = Math.round(hours / 24)
+  if (days <= 7) return plural(days, 'day') + ' ago'
+  return formatDateTime(isoTimestamp)
+}
+
+const timeFormatter = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' })
+
+/** A punch time, e.g. "6:15 am". */
+export function formatTime(isoTimestamp: string): string {
+  return timeFormatter.format(new Date(isoTimestamp))
+}
+
+const VERIFY_LABELS: Record<string, string> = { face: 'Face', fingerprint: 'Fingerprint', card: 'Card', password: 'PIN code', palm: 'Palm' }
+
+export function verifyLabel(method: string): string {
+  return VERIFY_LABELS[method] ?? 'Other'
+}

@@ -3,11 +3,13 @@ import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import type { Role } from './api/types'
 import { useAuth } from './auth/session'
 import { AppShell } from './components/AppShell'
+import { CheckinsPage } from './pages/CheckinsPage'
 import { ComingSoonPage } from './pages/ComingSoonPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { MembersPage } from './pages/MembersPage'
 import { OverduePage } from './pages/OverduePage'
+import { SettingsPage } from './pages/SettingsPage'
 
 // Lets through only signed-in users with one of the given roles; others go to login or to
 // their own home. The API enforces the same rules, this only keeps people off dead ends.
@@ -33,9 +35,10 @@ export default function App() {
             <Route index element={<DashboardPage />} />
             <Route path="members" element={<MembersPage />} />
             <Route path="overdue" element={<OverduePage />} />
+            <Route path="checkins" element={<CheckinsPage />} />
           </Route>
           <Route element={<RequireRole roles={['owner']} />}>
-            <Route path="settings" element={<ComingSoonPage title="Settings" note="Plans, staff and access rules" />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
           <Route element={<RequireRole roles={['superadmin']} />}>
             <Route path="admin" element={<ComingSoonPage title="Gyms" note="Onboard gyms and track their devices" />} />

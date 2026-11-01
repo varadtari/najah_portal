@@ -48,3 +48,13 @@ export function BuildingIcon() {
     </svg>
   )
 }
+
+export function CheckinIcon() {
+  return (
+    <svg {...common}>
+      <rect x="4" y="3" width="16" height="18" rx="3" />
+      <circle cx="12" cy="10" r="3" />
+      <path d="M8 17c.8-1.8 2.2-2.7 4-2.7s3.2.9 4 2.7" />
+    </svg>
+  )
+}

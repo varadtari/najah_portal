@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { expiryLabel, formatDate, formatInr, formatPhone, whatsappReminderLink } from './format'
+import { expiryLabel, formatDate, formatInr, formatPhone, relativeTime, whatsappReminderLink } from './format'
 
 describe('formatInr', () => {
   it('formats paise as rupees with Indian grouping', () => {
@@ -49,5 +49,19 @@ describe('whatsappReminderLink', () => {
 describe('formatPhone', () => {
   it('groups a 10-digit number with +91', () => {
     expect(formatPhone('9822011101')).toBe('+91 98220 11101')
+  })
+})
+
+describe('relativeTime', () => {
+  const now = new Date('2026-11-01T12:00:00Z')
+  it('describes recent times', () => {
+    expect(relativeTime('2026-11-01T11:59:30Z', now)).toBe('just now')
+    expect(relativeTime('2026-11-01T11:55:00Z', now)).toBe('5 min ago')
+    expect(relativeTime('2026-11-01T09:00:00Z', now)).toBe('3 h ago')
+    expect(relativeTime('2026-10-30T12:00:00Z', now)).toBe('2 days ago')
+    expect(relativeTime('2026-10-31T12:00:00Z', now)).toBe('1 day ago')
+  })
+  it('falls back to the date after a week', () => {
+    expect(relativeTime('2026-10-01T12:00:00Z', now)).toMatch(/Oct/)
   })
 })

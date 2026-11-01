@@ -16,6 +16,12 @@ The dev server proxies `/api/*` to the backend at `http://localhost:8001` (overr
 `API_TARGET=...`), so the browser sees one origin and the HttpOnly session cookie works without
 CORS. Production serves the built files and `/api` from the same host through the reverse proxy.
 
+### Device setup address
+
+Settings → Devices tells the installer what to type into the device's Cloud Server setting.
+Copy `.env.example` to `.env.local` and set `VITE_ADMS_SERVER` (locally: this laptop's LAN IP)
+and `VITE_ADMS_PORT`. Without a real device, run the backend's `cmd/devsim`.
+
 ## Scripts
 
 | Command | What it does |

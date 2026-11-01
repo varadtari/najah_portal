@@ -38,7 +38,7 @@ export function DashboardPage() {
 
       {error && <div className="form-error">{error.message}</div>}
 
-      <div className="metrics">
+      <div className="metrics four">
         <div className="glass metric act">
           <div>
             <div className="k">Active members</div>
@@ -46,6 +46,13 @@ export function DashboardPage() {
           </div>
           <div className="v">{data ? <Count value={data.activeMembers} /> : '–'}</div>
         </div>
+        <Link to="/checkins" className="glass metric" style={{ textDecoration: 'none' }}>
+          <div>
+            <div className="k">Check-ins today</div>
+            <div className="h">From your devices</div>
+          </div>
+          <div className="v">{data ? <Count value={data.checkinsToday} /> : '–'}</div>
+        </Link>
         <div className="glass metric">
           <div>
             <div className="k">Revenue this month</div>

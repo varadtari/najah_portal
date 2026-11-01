@@ -71,6 +71,57 @@ export type DashboardSummary = {
   today: string
   activeMembers: number
   overdueMembers: number
+  checkinsToday: number
   revenueThisMonthPaise: number
   recentPayments: Payment[]
+}
+
+export type Device = {
+  id: number
+  serialNumber: string
+  name: string
+  firmware: string | null
+  pushVersion: string | null
+  lastSeenAt: string | null
+  lastIp: string | null
+  online: boolean
+  pendingCommands: number
+  lastPunchAt: string | null
+  /** Set only on a device that never connected: when its serial last tried, unregistered. */
+  serialLastAttemptAt?: string | null
+  createdAt: string
+}
+
+export type DeviceCommandKind = 'open_door' | 'reboot' | 'info' | 'repull_logs' | 'check'
+
+export type DeviceCommand = {
+  id: number
+  kind: DeviceCommandKind
+  command: string
+  status: 'queued' | 'sent' | 'acked' | 'failed'
+  attempts: number
+  returnCode: number | null
+  sentAt: string | null
+  finishedAt: string | null
+  createdAt: string
+  requestedBy: number | null
+}
+
+export type Verdict = 'allowed' | 'allowed_but_expired' | 'unknown' | 'denied_expired' | 'denied_unknown'
+
+export type Checkin = {
+  id: number
+  deviceId: number
+  deviceName: string
+  memberId: number | null
+  memberName: string | null
+  pin: string
+  punchedAt: string
+  verifyMethod: string
+  verdict: Verdict
+}
+
+export type CheckinPage = {
+  checkins: Checkin[]
+  nextCursor: string | null
 }

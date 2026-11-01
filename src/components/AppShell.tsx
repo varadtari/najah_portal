@@ -3,7 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 import { useDashboard } from '../api/queries'
 import { useAuth } from '../auth/session'
-import { BuildingIcon, ClockIcon, DashboardIcon, MembersIcon, SettingsIcon } from './Icons'
+import { BuildingIcon, CheckinIcon, ClockIcon, DashboardIcon, MembersIcon, SettingsIcon } from './Icons'
 import { Logo } from './Logo'
 
 type NavItem = { to: string; label: string; icon: ReactNode; end?: boolean; badge?: boolean }
@@ -15,6 +15,7 @@ function navItemsFor(role: string): NavItem[] {
 
   const items: NavItem[] = [
     { to: '/', label: 'Dashboard', icon: <DashboardIcon />, end: true },
+    { to: '/checkins', label: 'Check-ins', icon: <CheckinIcon /> },
     { to: '/members', label: 'Members', icon: <MembersIcon /> },
     { to: '/overdue', label: 'Overdue', icon: <ClockIcon />, badge: true },
   ]
