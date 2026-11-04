@@ -79,6 +79,11 @@ export function installFakeApi(initial: Partial<State> = {}) {
       state.members.push(created)
       return ok(created, 201)
     }
+    const memberDetail = path.match(/^\/v1\/members\/(\d+)$/)
+    if (memberDetail && method === 'GET') {
+      const found = state.members.find((m) => m.id === Number(memberDetail[1]))
+      return found ? ok({ ...found, memberships: [], payments: [] }) : fail(404, 'Member not found')
+    }
     const renew = path.match(/^\/v1\/members\/(\d+)\/renew$/)
     if (renew && method === 'POST') {
       const target = state.members.find((m) => m.id === Number(renew[1]))!

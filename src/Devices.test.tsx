@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
 import { cleanup, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { checkin, device, installFakeApi, owner } from './test/fakeApi'
+import { FakeEventSource } from './test/fakeEventSource'
 import { renderApp } from './test/renderApp'
+
+beforeEach(() => FakeEventSource.install())
 
 beforeAll(() => {
   HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement) {

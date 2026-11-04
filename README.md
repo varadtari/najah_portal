@@ -46,6 +46,10 @@ src/styles/     design tokens and styles carried over from the prototype
 
 Any 401 from the API clears the session and returns the user to the login screen.
 
+Gym users keep one `EventSource` on `/api/v1/events/stream` (`src/live/`). New check-ins slide
+into the dashboard's live feed and refresh the affected lists (at most once a second); a
+`refresh` event reloads the feed, and `signedout` returns to the login screen.
+
 ## Tests
 
 `npm test` runs unit tests for the API client and formatters, and `src/App.test.tsx`, which

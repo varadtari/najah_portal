@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 import { useDashboard } from '../api/queries'
 import { useAuth } from '../auth/session'
+import { LiveEventsProvider } from '../live/LiveEventsProvider'
 import { BuildingIcon, CheckinIcon, ClockIcon, DashboardIcon, MembersIcon, SettingsIcon } from './Icons'
 import { Logo } from './Logo'
 
@@ -72,7 +73,14 @@ export function AppShell() {
           </div>
         </aside>
         <main>
-          <Outlet />
+          {/* One live stream per signed-in gym user; the superadmin has no gym to follow. */}
+          {hasGym ? (
+            <LiveEventsProvider>
+              <Outlet />
+            </LiveEventsProvider>
+          ) : (
+            <Outlet />
+          )}
         </main>
       </div>
 

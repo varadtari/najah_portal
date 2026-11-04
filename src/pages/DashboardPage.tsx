@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 
 import { useDashboard } from '../api/queries'
 import { AddMemberModal } from '../components/AddMemberModal'
+import { LiveFeed } from '../components/LiveFeed'
+import { LiveStatus } from '../components/LiveStatus'
 import { useAuth } from '../auth/session'
 import { formatDateTime, formatInr } from '../lib/format'
 import { useCountUp } from '../lib/useCountUp'
@@ -35,6 +37,8 @@ export function DashboardPage() {
           Add member
         </button>
       </div>
+
+      <LiveStatus />
 
       {error && <div className="form-error">{error.message}</div>}
 
@@ -69,24 +73,34 @@ export function DashboardPage() {
         </Link>
       </div>
 
-      <div className="top">
-        <h2 style={{ fontSize: 19 }}>Recent payments</h2>
-      </div>
-      <div className="glass panel">
-        {isPending && <div className="loading">Loading…</div>}
-        {data && data.recentPayments.length === 0 && <div className="empty">No payments yet. Add your first member to get started.</div>}
-        {data?.recentPayments.map((payment) => (
-          <div key={payment.id} className="pay-row">
-            <span>
-              <b>{payment.memberName}</b>
-              <br />
-              <small>
-                Paid via {payment.method === 'upi' ? 'UPI' : 'Cash'} · {formatDateTime(payment.paidAt)}
-              </small>
-            </span>
-            <span className="amt">{formatInr(payment.amountPaise)}</span>
+      <div className="two-col">
+        <section>
+          <div className="top">
+            <h2 style={{ fontSize: 19 }}>Live check-ins</h2>
           </div>
-        ))}
+          <LiveFeed />
+        </section>
+        <section>
+          <div className="top">
+            <h2 style={{ fontSize: 19 }}>Recent payments</h2>
+          </div>
+          <div className="glass panel">
+            {isPending && <div className="loading">Loading…</div>}
+            {data && data.recentPayments.length === 0 && <div className="empty">No payments yet. Add your first member to get started.</div>}
+            {data?.recentPayments.map((payment) => (
+              <div key={payment.id} className="pay-row">
+                <span>
+                  <b>{payment.memberName}</b>
+                  <br />
+                  <small>
+                    Paid via {payment.method === 'upi' ? 'UPI' : 'Cash'} · {formatDateTime(payment.paidAt)}
+                  </small>
+                </span>
+                <span className="amt">{formatInr(payment.amountPaise)}</span>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
 
       {adding && <AddMemberModal onClose={() => setAdding(false)} />}
