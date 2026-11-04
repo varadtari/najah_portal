@@ -22,6 +22,18 @@ Settings → Devices tells the installer what to type into the device's Cloud Se
 Copy `.env.example` to `.env.local` and set `VITE_ADMS_SERVER` (locally: this laptop's LAN IP)
 and `VITE_ADMS_PORT`. Without a real device, run the backend's `cmd/devsim`.
 
+## Docker image
+
+`Dockerfile` builds the portal and serves it with Caddy (client-side routes fall back to
+`index.html`; hashed assets are cached for a year, `index.html` never). The device setup address
+is fixed at build time:
+
+```sh
+docker build --build-arg VITE_ADMS_SERVER=adms.example.in --build-arg VITE_ADMS_PORT=8081 -t najah_portal .
+```
+
+The full production stack and how to test it locally are in the backend's `docs/deployment.md`.
+
 ## Scripts
 
 | Command | What it does |

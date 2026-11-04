@@ -1,0 +1,17 @@
+# Serves the built portal behind the edge proxy (TLS is terminated there).
+:80 {
+	root * /srv
+	encode zstd gzip
+
+	# Hashed build assets never change; cache them for a year.
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=31536000, immutable"
+
+	# index.html must always be fresh, or users keep an old build after a deploy.
+	@html path / /index.html
+	header @html Cache-Control "no-cache"
+
+	# Client-side routes (/members, /settings, ...) all load the app.
+	try_files {path} /index.html
+	file_server
+}
