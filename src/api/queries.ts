@@ -107,6 +107,28 @@ export function useRemoveDevice() {
   })
 }
 
+export function useUpdateGym() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (input: { graceDays?: number; blockOnExpiry?: boolean }) => api<Gym>('/v1/gym', { method: 'PATCH', body: input }),
+    onSuccess: (gym) => {
+      queryClient.setQueryData(queryKeys.gym, gym)
+      // Who is let in changes with these settings.
+      queryClient.invalidateQueries({ queryKey: ['members'] })
+      queryClient.invalidateQueries({ queryKey: ['overdue'] })
+    },
+  })
+}
+
+export function useSyncDevice(deviceId: number) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => api<{ commandsQueued: number }>(`/v1/devices/${deviceId}/sync`, { method: 'POST' }),
+    onSuccess: () =>
+      Promise.all(['devices', 'members', 'device-commands'].map((key) => queryClient.invalidateQueries({ queryKey: [key] }))),
+  })
+}
+
 export function useDeviceCommands(deviceId: number, enabled: boolean) {
   return useQuery({
     queryKey: queryKeys.deviceCommands(deviceId),

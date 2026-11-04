@@ -32,6 +32,10 @@ export type Plan = {
   active: boolean
 }
 
+export type AccessState = 'on_device' | 'blocked' | 'syncing' | 'not_on_device' | 'error' | 'no_devices'
+
+export type MemberAccess = { state: AccessState; devices: number; error?: string | null }
+
 export type Member = {
   id: number
   devicePin: number
@@ -42,6 +46,8 @@ export type Member = {
   status: MemberStatus
   /** Negative once expired: -3 means it expired three days ago. */
   daysToExpiry: number | null
+  /** Door access across the gym's devices (members list only). */
+  access?: MemberAccess
 }
 
 export type Membership = {
@@ -92,13 +98,13 @@ export type Device = {
   createdAt: string
 }
 
-export type DeviceCommandKind = 'open_door' | 'reboot' | 'info' | 'repull_logs' | 'check'
+export type DeviceCommandKind = 'open_door' | 'reboot' | 'info' | 'repull_logs' | 'check' | 'sync_user' | 'delete_user' | 'restore_template'
 
 export type DeviceCommand = {
   id: number
   kind: DeviceCommandKind
   command: string
-  status: 'queued' | 'sent' | 'acked' | 'failed'
+  status: 'queued' | 'sent' | 'acked' | 'failed' | 'superseded'
   attempts: number
   returnCode: number | null
   sentAt: string | null

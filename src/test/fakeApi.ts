@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 
-import type { Checkin, DashboardSummary, Device, DeviceCommand, Me, Member, Plan } from '../api/types'
+import type { Checkin, DashboardSummary, Device, DeviceCommand, Gym, Me, Member, Plan } from '../api/types'
 
 // An in-memory stand-in for essl_integration_service, enough to drive the app's flows in jsdom.
 // It speaks the real response shape: {type, message} or an ApplicationError.
@@ -25,14 +25,14 @@ export function checkin(overrides: Partial<Checkin>): Checkin {
   return { id: 1, deviceId: 1, deviceName: 'Front door', memberId: 1, memberName: 'Rohan Naik', pin: '1', punchedAt: '2026-11-01T00:45:02Z', verifyMethod: 'face', verdict: 'allowed', ...overrides }
 }
 
-type State = { session: Me | null; accounts: Record<string, Me>; members: Member[]; devices: Device[]; commands: DeviceCommand[]; checkins: Checkin[]; requests: string[] }
+type State = { gym: Gym; session: Me | null; accounts: Record<string, Me>; members: Member[]; devices: Device[]; commands: DeviceCommand[]; checkins: Checkin[]; requests: string[] }
 
 const ok = (message: unknown, status = 200) => new Response(JSON.stringify({ type: 'success', message }), { status })
 const fail = (status: number, displayMessage: string) =>
   new Response(JSON.stringify({ type: 'error', requestId: 'test', message: { errorCode: 1, displayMessage } }), { status })
 
 export function installFakeApi(initial: Partial<State> = {}) {
-  const state: State = { session: null, accounts: { [owner.email]: owner, [superadmin.email]: superadmin }, members: [], devices: [], commands: [], checkins: [], requests: [], ...initial }
+  const state: State = { gym: { id: 1, name: 'Panaji Iron Works', timezone: 'Asia/Kolkata', graceDays: 0, blockOnExpiry: true, billingStatus: 'trial' }, session: null, accounts: { [owner.email]: owner, [superadmin.email]: superadmin }, members: [], devices: [], commands: [], checkins: [], requests: [], ...initial }
 
   const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = new URL(String(input), 'http://localhost')
@@ -90,6 +90,14 @@ export function installFakeApi(initial: Partial<State> = {}) {
       Object.assign(target, { status: 'active', daysToExpiry: 30, startDate: '2026-11-01', endDate: '2026-12-01' })
       return ok(target, 201)
     }
+    if (path === '/v1/gym' && method === 'GET') return ok(state.gym)
+    if (path === '/v1/gym' && method === 'PATCH') {
+      if (state.session.role !== 'owner') return fail(403, 'Only the gym owner can do this')
+      Object.assign(state.gym, body)
+      return ok(state.gym)
+    }
+    const deviceSync = path.match(/^\/v1\/devices\/(\d+)\/sync$/)
+    if (deviceSync && method === 'POST') return ok({ commandsQueued: state.members.length })
     if (path === '/v1/devices' && method === 'GET') return ok(state.devices)
     if (path === '/v1/devices' && method === 'POST') {
       if (state.session.role !== 'owner') return fail(403, 'Only the gym owner can do this')

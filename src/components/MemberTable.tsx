@@ -1,5 +1,6 @@
 import type { Member } from '../api/types'
 import { expiryLabel, formatPhone, whatsappReminderLink } from '../lib/format'
+import { AccessPill } from './AccessPill'
 
 const WhatsAppIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden>
@@ -26,6 +27,7 @@ export function MemberTable({ members, gymName, emptyText, onRenew }: Props) {
           <th>Member</th>
           <th>Expires</th>
           <th>Status</th>
+          <th>Door access</th>
           <th>
             <span className="sr-only">Actions</span>
           </th>
@@ -43,6 +45,9 @@ export function MemberTable({ members, gymName, emptyText, onRenew }: Props) {
               <td className="exp">{expiryLabel(member.daysToExpiry, member.endDate)}</td>
               <td className="st">
                 <span className={overdue ? 'pill od' : 'pill ok'}>{overdue ? 'Overdue' : 'Active'}</span>
+              </td>
+              <td className="acc">
+                <AccessPill access={member.access} />
               </td>
               <td className="ac">
                 <div className="acts">

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { useDeviceCommands, useQueueCommand, useRemoveDevice } from '../api/queries'
+import { useDeviceCommands, useQueueCommand, useRemoveDevice, useSyncDevice } from '../api/queries'
 import type { Device, DeviceCommandKind } from '../api/types'
 import { formatDateTime, relativeTime } from '../lib/format'
 import { Modal } from './Modal'
@@ -15,9 +15,12 @@ const COMMAND_LABELS: Record<DeviceCommandKind, string> = {
   info: 'Refresh device info',
   repull_logs: 'Re-pull logs',
   check: 'Check for new data',
+  sync_user: 'Add or update member',
+  delete_user: 'Remove member',
+  restore_template: 'Restore face / fingerprint',
 }
 
-const STATUS_LABELS = { queued: 'Waiting for device', sent: 'Sent', acked: 'Done', failed: 'Failed' } as const
+const STATUS_LABELS = { queued: 'Waiting for device', sent: 'Sent', acked: 'Done', failed: 'Failed', superseded: 'Replaced by a newer change' } as const
 
 // Steps for the person at the device; the address comes from VITE_ADMS_SERVER.
 function SetupSteps({ device }: { device: Device }) {
@@ -34,6 +37,9 @@ function SetupSteps({ device }: { device: Device }) {
         Check the serial under <b>Menu → System Info → Device Info</b> is <code>{device.serialNumber}</code>.
       </li>
       <li>Save, then restart the device. It connects within a minute.</li>
+      <li>
+        Enrol device admins with a user ID of <b>9000 or higher</b>. Lower IDs belong to members, and Najah manages them.
+      </li>
     </ol>
   )
 }
@@ -46,6 +52,7 @@ function StatusPill({ device }: { device: Device }) {
 export function DeviceCard({ device }: { device: Device }) {
   const queue = useQueueCommand(device.id)
   const remove = useRemoveDevice()
+  const sync = useSyncDevice(device.id)
   const toast = useToast()
   const [showHistory, setShowHistory] = useState(false)
   const [confirmRemove, setConfirmRemove] = useState(false)
@@ -115,6 +122,22 @@ export function DeviceCard({ device }: { device: Device }) {
         </button>
         <button className="ib" onClick={() => send('reboot')} disabled={neverConnected || queue.isPending}>
           Reboot
+        </button>
+        <button
+          className="ib"
+          disabled={sync.isPending}
+          title="Send every member to this device again, e.g. after it was reset"
+          onClick={async () => {
+            try {
+              const result = await sync.mutateAsync()
+              toast(`${result.commandsQueued} member update${result.commandsQueued === 1 ? '' : 's'} sent to ${device.name}.`)
+              setShowHistory(true)
+            } catch (err) {
+              toast((err as Error).message, 'error')
+            }
+          }}
+        >
+          Sync members
         </button>
         <button className="ib" onClick={() => setShowHistory((v) => !v)}>
           {showHistory ? 'Hide history' : 'Command history'}

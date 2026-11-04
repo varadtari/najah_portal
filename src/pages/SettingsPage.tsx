@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 
 import { useAddDevice, useDevices } from '../api/queries'
+import { AccessRules } from '../components/AccessRules'
 import { DeviceCard } from '../components/DeviceCard'
 import { useToast } from '../components/toast-context'
 
@@ -57,10 +58,13 @@ export function SettingsPage() {
       <div className="top">
         <div>
           <h2>Settings</h2>
-          <p>Devices at your gym</p>
+          <p>Door access and devices</p>
         </div>
       </div>
 
+      <AccessRules />
+
+      <h2 className="section-title">Devices</h2>
       {error && <div className="form-error">{error.message}</div>}
       {isPending ? <div className="loading">Loading…</div> : devices.map((device) => <DeviceCard key={device.id} device={device} />)}
 
